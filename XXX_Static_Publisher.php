@@ -151,6 +151,7 @@ abstract class XXX_Static_Publisher
 		
 		if (XXX_FileSystem_Local::doesFileExist($destinationFilePath))
 		{
+			trigger_error('deleteFile for $destinationFilePath ' . $destinationFilePath);
 			XXX_FileSystem_Local::deleteFile($destinationFilePath);
 		}
 		
@@ -173,6 +174,7 @@ abstract class XXX_Static_Publisher
 						
 						if ($newPathExists)
 						{
+							trigger_error('deleteFile for $newPath ' . $newPath);
 							if (!XXX_FileSystem_Local::deleteFile($newPath))
 							{
 								$clear = false;
@@ -206,6 +208,7 @@ abstract class XXX_Static_Publisher
 							*/
 							if (!$processed)
 							{
+								trigger_error('copyFile for $newPath ' . $newPath);
 								$result = XXX_FileSystem_Local::copyFile($path, $newPath);
 							}
 						}
@@ -220,6 +223,7 @@ abstract class XXX_Static_Publisher
 					
 					if ($deleteSourceFile || $temporaryFile)
 					{
+						trigger_error('deleteFile for $sourceFilePath ' . $sourceFilePath);
 						XXX_FileSystem_Local::deleteFile($sourceFilePath);
 					}
 				}
@@ -251,6 +255,7 @@ abstract class XXX_Static_Publisher
 			{			
 				if (XXX_FileSystem_Local::doesDirectoryExist($destinationDirectoryPath))
 				{
+					trigger_error('emptyDirectory for $destinationDirectoryPath ' . $destinationDirectoryPath);
 					XXX_FileSystem_Local::emptyDirectory($destinationDirectoryPath);
 				}
 			}
@@ -305,6 +310,7 @@ abstract class XXX_Static_Publisher
 			
 			if ($deleteSourceDirectory)
 			{
+				trigger_error('deleteDirectory for $sourceDirectoryPath ' . $sourceDirectoryPath);
 				XXX_FileSystem_Local::deleteDirectory($sourceDirectoryPath);
 			}
 		}
