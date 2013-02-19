@@ -1,6 +1,6 @@
 <?php
 
-// TODO add  timestamp of publishing in directory path, write a temp file to include each time with that timestamp...
+// TODO add  timestamp of publishing in directory path, write a temp file to include each time with that timestamp... NO old references will not work properly with a new deploy iteration
 
 abstract class XXX_Static_Publisher
 {
@@ -51,11 +51,13 @@ abstract class XXX_Static_Publisher
 			'directories' => array
 			(
 				'allowNames' => array
-				(					
+				(
 				),
 				
 				'denyNames' => array
 				(
+					'.git',
+					'httpServerJail',
 					'cache',
 					'controllers',
 					'models',
@@ -225,7 +227,7 @@ abstract class XXX_Static_Publisher
 				}
 				else
 				{
-					trigger_error('Unable to write destination file: "' . $destinationFilePath . '".');			
+					trigger_error('Unable to write destination file: "' . $destinationFilePath . '".');
 				}
 			}
 			else
@@ -235,7 +237,7 @@ abstract class XXX_Static_Publisher
 		}
 		else
 		{
-			trigger_error('Source file: "' . $sourceFilePath . '" doesn\'t exist or isn\'t available.');		
+			trigger_error('Source file: "' . $sourceFilePath . '" doesn\'t exist or isn\'t available.');
 		}
 		
 		return $result;
@@ -392,6 +394,14 @@ abstract class XXX_Static_Publisher
 		return $result;
 	}
 	
+	public static function publish ()
+	{
+		foreach (self::$publishGroups as $groupName => $items)
+		{
+			self::publishGroup($groupName);
+		}
+	}
+	
 	public static function addGroup ($groupName = '')
 	{
 		$result = false;
@@ -433,7 +443,7 @@ abstract class XXX_Static_Publisher
 		}
 		
 		return $result;
-	}	
+	}
 }
 
 ?>
