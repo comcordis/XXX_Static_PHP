@@ -370,9 +370,9 @@ abstract class XXX_Static_Publisher
 		return $result;
 	}
 	
-	public static function publishMergedFilesFromOtherProject ($project = '', $mergeFiles = array(), $resultFile = '', $publishProfile = '')
+	public static function publishMergedFilesFromOtherProject ($project = '', $deployIdentifier = 'latest', $mergeFiles = array(), $resultFile = '', $publishProfile = '')
 	{
-		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project), $mergeFiles, XXX_String::$lineSeparator);
+		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project, $deployIdentifier), $mergeFiles, XXX_String::$lineSeparator);
 		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile, $content);
 		
 		$item = array
