@@ -70,9 +70,7 @@ abstract class XXX_Static_Publisher
 	);
 	
 	public static $selectedPublishProfile = false;
-	
-	public static $publishGroups = array(); 
-	
+		
 	public static function addPublishProfile ($name = '', $publishProfile = array())
 	{
 		self::$publishProfiles[$name] = $publishProfile;
@@ -327,17 +325,23 @@ abstract class XXX_Static_Publisher
 	{
 		$result = false;
 		
-		if ($item['composeFunction'] != '')
+		if ($item['publishProfile'] == '')
 		{
-			$result = $item['composeFunction']();
-		}
-		else
-		{
-			$result = true;
+			$item['publishProfile'] = 'default';
 		}
 		
-		if ($result)
+		if ($item['type'] == '')
 		{
+			if (XXX_FileSystem_Local::doesDirectoryExist($item['sourcePath']))
+			{
+				$item['type'] = 'directory';
+			}
+			else
+			{
+				$item['type'] = 'file';
+			}
+		}
+			
 			if ($item['publishProfile'])
 			{				
 				self::enablePublishProfile($item['publishProfile']);
@@ -362,87 +366,30 @@ abstract class XXX_Static_Publisher
 			{	
 				$result = true;
 			}
-		}
 		
 		return $result;
 	}
 	
-	public static function publishGroup ($groupName = '')
+	public static function publishMergedFilesFromOtherProject ($project = '', $mergeFiles = array(), $resultFile = '', $publishProfile = '')
 	{
-		$result = false;
+		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project), $mergeFiles, XXX_String::$lineSeparator);
+		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile, $content);
 		
-		if (XXX_Array::hasKey(self::$publishGroups, $groupName))
-		{
-			$result = true;
-			
-			for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal(self::$publishGroups[$groupName]); $i < $iEnd; ++$i)
-			{
-				$item = self::$publishGroups[$groupName][$i];
-				
-				if ($result)
-				{
-					$tempResult = self::publishItem($item);
-					
-					if (!$tempResult)
-					{	
-						$result = false;
-					}
-				}
-			}
-		}
+		$item = array
+		(
+			'sourcePath' => XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile,
+			'destinationPath' => XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentSourcePathPrefix, array('httpServerJail', 'static', $project, $resultFile)),
+			'publishProfile' => $publishProfile
+		);
+		
+		$result = self::publishItem($item);
 		
 		return $result;
 	}
 	
-	public static function publish ()
+	public static function clear ()
 	{
-		foreach (self::$publishGroups as $groupName => $items)
-		{
-			self::publishGroup($groupName);
-		}
-	}
-	
-	public static function addGroup ($groupName = '')
-	{
-		$result = false;
-		
-		if (!XXX_Array::hasKey(self::$publishGroups, $groupName))
-		{
-			self::$publishGroups[$groupName] = array();
-		}
-		
-		return $result;
-	}
-	
-	public static function addItem ($groupName = '', $item = array())
-	{
-		$result = false;
-		
-		self::addGroup($groupName);
-		
-		if (XXX_Array::hasKey(self::$publishGroups, $groupName))
-		{
-			if ($item['publishProfile'] == '')
-			{
-				$item['publishProfile'] = 'default';
-			}
-			
-			if ($item['type'] == '')
-			{
-				if (XXX_FileSystem_Local::doesDirectoryExist($item['sourcePath']))
-				{
-					$item['type'] = 'directory';
-				}
-				else
-				{
-					$item['type'] = 'file';
-				}
-			}
-			
-			self::$publishGroups[$groupName][] = $item;
-		}
-		
-		return $result;
+		XXX_FileSystem_Local::emptyDirectory(XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentSourcePathPrefix, array('httpServerJail', 'static')));
 	}
 }
 
