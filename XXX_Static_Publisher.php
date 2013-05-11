@@ -6,6 +6,10 @@ abstract class XXX_Static_Publisher
 {
 	const CLASS_NAME = 'XXX_Static_Publisher';
 	
+	public static $destinationPathPrefix = '';
+	
+	public static $cacheMapping = array();
+	
 	public static $publishProfiles = array
 	(
 		'default' => array
@@ -183,8 +187,24 @@ abstract class XXX_Static_Publisher
 						if ($clear)
 						{
 							$processed = false;
+														
 							/*
+							$pathToIdentifier = XXX_Path_Local::getParentPath($newPath);
+							
+							$fileName = XXX_FileSystem_Local::getFileName($newPath);
+							$extension = XXX_FileSystem_Local::getFileExtension($newPath);
+							
+							$checksum = XXX_FileSystem_Local::getFileChecksum($path, 'md5');
+							
+							$tempNewPath = XXX_Path_Local::extendPath($pathToIdentifier, $fileName . '.' . $checksum . '.' . $extension);
+							
+							echo $path . '<br>- ' . $newPath . '<br>- ' . $tempNewPath . '<hr>';
+							
 							$extension = XXX_FileSystem_Local::getFileExtension($path);
+							
+							
+							
+							
 							
 							$filesPublishProfile = self::$publishProfiles[self::$selectedPublishProfile]['files'];			
 							
@@ -208,6 +228,8 @@ abstract class XXX_Static_Publisher
 							if (!$processed)
 							{
 								$result = XXX_FileSystem_Local::copyFile($path, $newPath);
+								
+								//$result = XXX_FileSystem_Local::copyFile($path, $tempNewPath);
 							}
 						}
 					}
@@ -580,7 +602,7 @@ abstract class XXX_Static_Publisher
 		$item = array
 		(
 			'sourcePath' => $temporaryFilePath,
-			'destinationPath' => XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentSourcePathPrefix, array('httpServerJail', 'static', $project, $resultFile)),
+			'destinationPath' => XXX_Path_Local::extendPath(self::destinationPathPrefix, array($project, $resultFile)),
 			'publishProfile' => $publishProfile
 		);
 		
@@ -597,7 +619,7 @@ abstract class XXX_Static_Publisher
 		$item = array
 		(
 			'sourcePath' => XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile,
-			'destinationPath' => XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentSourcePathPrefix, array('httpServerJail', 'static', $project, $resultFile)),
+			'destinationPath' => XXX_Path_Local::extendPath(self::$destinationPathPrefix, array($project, $resultFile)),
 			'publishProfile' => $publishProfile
 		);
 		
@@ -608,7 +630,7 @@ abstract class XXX_Static_Publisher
 	
 	public static function clear ()
 	{
-		XXX_FileSystem_Local::emptyDirectory(XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentSourcePathPrefix, array('httpServerJail', 'static')));
+		XXX_FileSystem_Local::emptyDirectory(self::$destinationPathPrefix);
 	}
 }
 
