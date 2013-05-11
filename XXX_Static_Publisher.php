@@ -602,7 +602,7 @@ abstract class XXX_Static_Publisher
 		$item = array
 		(
 			'sourcePath' => $temporaryFilePath,
-			'destinationPath' => XXX_Path_Local::extendPath(self::destinationPathPrefix, array($project, $resultFile)),
+			'destinationPath' => XXX_Path_Local::extendPath(self::$destinationPathPrefix, array($project, $resultFile)),
 			'publishProfile' => $publishProfile
 		);
 		
