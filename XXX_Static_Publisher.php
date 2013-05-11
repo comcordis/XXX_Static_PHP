@@ -75,6 +75,42 @@ abstract class XXX_Static_Publisher
 	);
 	
 	public static $selectedPublishProfile = false;
+	
+	public static function initialize ()
+	{
+		self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentDataPathPrefix, array('static'));
+		
+		include_once XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
+		
+		global $XXX_Static_cacheMapping;
+		
+		self::$cacheMapping = $XXX_Static_cacheMapping;
+	}
+	
+	public static function mapFile ($originalFilePath = '')
+	{
+		$result = $originalFilePath;
+		
+		$filePathWithChecksum = self::$cacheMapping[$originalFilePath];
+		
+		if ($filePathWithChecksum)
+		{
+			$result = $filePathWithChecksum;
+		}
+		
+		return $result;
+	}
+	
+	public static function prefixAndMapFile ($originalFilePath = '')
+	{
+		$result = '';
+		
+		$result .= 'http://' . XXX_URI::$staticURIPathPrefix;
+		
+		$result .= self::mapFile($originalFilePath);
+		
+		return $result;
+	}
 		
 	public static function addPublishProfile ($name = '', $publishProfile = array())
 	{
@@ -187,24 +223,52 @@ abstract class XXX_Static_Publisher
 						if ($clear)
 						{
 							$processed = false;
-														
+							
+							
 							/*
+							
+							1. Strip destinationPathPrefix
+							
+							2. Normalize path, strip directory separator from begin
+							
+							3. Replace directory separator with URI
+							
+							
+							
+							*/						
+							
 							$pathToIdentifier = XXX_Path_Local::getParentPath($newPath);
 							
 							$fileName = XXX_FileSystem_Local::getFileName($newPath);
 							$extension = XXX_FileSystem_Local::getFileExtension($newPath);
 							
-							$checksum = XXX_FileSystem_Local::getFileChecksum($path, 'md5');
+							$checksum = XXX_String::getPart(XXX_FileSystem_Local::getFileChecksum($path, 'md5'), 0, 12);
 							
-							$tempNewPath = XXX_Path_Local::extendPath($pathToIdentifier, $fileName . '.' . $checksum . '.' . $extension);
+							$newPathWithChecksum = XXX_Path_Local::extendPath($pathToIdentifier, $fileName . '.' . $checksum . '.' . $extension);
 							
-							echo $path . '<br>- ' . $newPath . '<br>- ' . $tempNewPath . '<hr>';
+							
+							$destinationPathPrefixCharacterLength = XXX_String::getCharacterLength(self::$destinationPathPrefix . XXX_OperatingSystem::$directorySeparator);
+							
+							$shortenedNewPath = XXX_String::getPart($newPath, $destinationPathPrefixCharacterLength);
+							$shortenedNewPathWithChecksum = XXX_String::getPart($newPathWithChecksum, $destinationPathPrefixCharacterLength);
+							
+							$shortenedNewPath = XXX_String::replace($shortenedNewPath, XXX_OperatingSystem::$directorySeparator, '/');
+							$shortenedNewPathWithChecksum = XXX_String::replace($shortenedNewPathWithChecksum, XXX_OperatingSystem::$directorySeparator, '/');
+							
+							/*						
+							echo $path . '<br>';
+							echo '- ' . $newPath . '<br>';
+							echo '- ' . $newPathWithChecksum . '<br>';
+							echo '- ' . $shortenedNewPath . '<br>';
+							echo '- ' . $shortenedNewPathWithChecksum . '<br>';
+							
+							echo '<hr>';
+							*/
+							self::$cacheMapping[$shortenedNewPath] = $shortenedNewPathWithChecksum;
+							
+							/*
 							
 							$extension = XXX_FileSystem_Local::getFileExtension($path);
-							
-							
-							
-							
 							
 							$filesPublishProfile = self::$publishProfiles[self::$selectedPublishProfile]['files'];			
 							
@@ -229,7 +293,7 @@ abstract class XXX_Static_Publisher
 							{
 								$result = XXX_FileSystem_Local::copyFile($path, $newPath);
 								
-								//$result = XXX_FileSystem_Local::copyFile($path, $tempNewPath);
+								$result = XXX_FileSystem_Local::copyFile($path, $newPathWithChecksum);
 							}
 						}
 					}
@@ -631,6 +695,41 @@ abstract class XXX_Static_Publisher
 	public static function clear ()
 	{
 		XXX_FileSystem_Local::emptyDirectory(self::$destinationPathPrefix);
+	}
+	
+	public static function saveCacheMapping ()
+	{
+		$originalArrayLayoutMethod = XXX_Type::$arrayLayoutMethod;
+		$originalComments = XXX_Type::$comments;
+		
+		XXX_Type::$arrayLayoutMethod = 'lean';
+		XXX_Type::$comments = false;
+		
+		$variableName = '$XXX_Static_cacheMapping';
+			
+		XXX_Client_Output::startBuffer();
+		
+			echo '<?php' . XXX_OperatingSystem::$lineSeparator;
+			
+			echo XXX_OperatingSystem::$lineSeparator;
+			
+			echo 'global $XXX_Static_cacheMapping;';
+			
+			echo XXX_OperatingSystem::$lineSeparator;
+			
+			echo XXX_OperatingSystem::$lineSeparator;
+							
+			XXX_Type::peakAtVariableSub(self::$cacheMapping, 0, $variableName);
+			
+			echo XXX_OperatingSystem::$lineSeparator . '?>';
+		
+		$content = XXX_Client_Output::getBufferContent();
+		
+		XXX_FileSystem_Local::writeFileContent(XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php'), $content);
+		
+		XXX_Type::$arrayLayoutMethod = $originalArrayLayoutMethod;
+		XXX_Type::$comments = $originalComments;
+		
 	}
 }
 
