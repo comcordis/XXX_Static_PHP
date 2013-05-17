@@ -80,11 +80,16 @@ abstract class XXX_Static_Publisher
 	{
 		self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentDataPathPrefix, array('static'));
 		
-		include_once XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
+		$staticCacheMappingPath = XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
 		
-		global $XXX_Static_cacheMapping;
-		
-		self::$cacheMapping = $XXX_Static_cacheMapping;
+		if ($staticCacheMappingPath)
+		{
+			include_once $staticCacheMappingPath;
+			
+			global $XXX_Static_cacheMapping;
+			
+			self::$cacheMapping = $XXX_Static_cacheMapping;
+		}
 	}
 	
 	public static function mapFile ($originalFilePath = '')
