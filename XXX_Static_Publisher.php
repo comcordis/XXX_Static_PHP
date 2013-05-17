@@ -82,7 +82,7 @@ abstract class XXX_Static_Publisher
 		
 		$staticCacheMappingPath = XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
 		
-		if ($staticCacheMappingPath)
+		if (is_file($staticCacheMappingPath))
 		{
 			include_once $staticCacheMappingPath;
 			
