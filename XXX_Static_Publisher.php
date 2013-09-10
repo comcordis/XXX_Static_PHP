@@ -1,6 +1,6 @@
 <?php
 
-// TODO add  timestamp of publishing in directory path, write a temp file to include each time with that timestamp... NO old references will not work properly with a new deploy iteration
+// TODO css replace url() with checksum stuff
 
 abstract class XXX_Static_Publisher
 {
@@ -695,6 +695,11 @@ abstract class XXX_Static_Publisher
 		$result = self::publishItem($item);
 		
 		return $result;
+	}
+	
+	public static function publishOtherProject ($project = '', $deployIdentifier = 'latest', $publishProfile = '')
+	{
+		XXX_Path_Local::includeOtherProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
 	}
 	
 	public static function clear ()
