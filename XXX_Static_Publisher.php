@@ -110,7 +110,7 @@ abstract class XXX_Static_Publisher
 	{
 		$result = '';
 		
-		$result .= 'http://' . XXX_URI::$staticURIPathPrefix;
+		$result .= XXX_URI::$wwwProtocolPrefix . XXX_URI::$staticURIPathPrefix;
 		
 		$result .= self::mapFile($originalFilePath);
 		
