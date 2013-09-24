@@ -95,14 +95,15 @@ abstract class XXX_Static_HTTPServer
 				XXX_HTTPServer_Client_Output::sendHeader('Last-Modified: '. gmdate('D, d M Y H:i:s', $fileModifiedTimestamp) . ' GMT');
 				XXX_HTTPServer_Client_Output::sendHeader('Content-Type: ' . $mimeType);
 				XXX_HTTPServer_Client_Output::sendHeader('Content-Length: ' . $byteSize);
-				XXX_HTTPServer_Client_Output::sendHeader('Connection: close');
-	
-				if (class_exists('XXX_HTTP_Cooke_Session'))
+				
+				if (class_exists('XXX_HTTP_Cookie_Session'))
 				{
 					XXX::dispatchEventToListeners('beforeSaveSession');
-					XXX_HTTP_Cooke_Session::save();
+					XXX_HTTP_Cookie_Session::save();
 				}
-					
+				
+				XXX_HTTPServer_Client_Output::sendHeader('Connection: close');
+		
 				echo $fileContent;
 			}
 		}
