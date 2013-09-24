@@ -97,6 +97,11 @@ abstract class XXX_Static_HTTPServer
 				XXX_HTTPServer_Client_Output::sendHeader('Content-Length: ' . $byteSize);
 				XXX_HTTPServer_Client_Output::sendHeader('Connection: close');
 	
+				if (class_exists('XXX_HTTP_Cooke_Session'))
+				{
+					XXX_HTTP_Cooke_Session::save();
+				}
+					
 				echo $fileContent;
 			}
 		}
