@@ -99,6 +99,7 @@ abstract class XXX_Static_HTTPServer
 	
 				if (class_exists('XXX_HTTP_Cooke_Session'))
 				{
+					XXX::dispatchEventToListeners('beforeSaveSession');
 					XXX_HTTP_Cooke_Session::save();
 				}
 					
