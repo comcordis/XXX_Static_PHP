@@ -63,7 +63,7 @@ abstract class XXX_Static_HTTPServer
 			$fileModifiedTimestamp = XXX_TimestampHelpers::getCurrentTimestamp();
 		}
 		
-		if(XXX_HTTPServer_Client_Input::$onlyIfModifiedSinceTimestamp == $fileModifiedTimestamp)
+		if(XXX_HTTPServer_Client_Input::$onlyIfModifiedSinceTimestamp == $fileModifiedTimestamp && 1 == 2)
 		{
 			XXX_HTTPServer_Client_Output::sendNotModifiedHeader();
 		}
