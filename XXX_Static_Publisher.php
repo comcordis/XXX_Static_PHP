@@ -78,8 +78,15 @@ abstract class XXX_Static_Publisher
 	
 	public static function initialize ()
 	{
-		self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataProjectsPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['deployEnvironment'], XXX::$deploymentInformation['project']));
-		
+		if (XXX::$deploymentInformation['localDevelopmentBox'])
+		{
+			self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataProjectsPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['project']));
+		}
+		else
+		{
+			self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataProjectsPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['deployEnvironment'], XXX::$deploymentInformation['project']));
+		}
+				
 		$staticCacheMappingPath = XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
 		
 		if (is_file($staticCacheMappingPath))
