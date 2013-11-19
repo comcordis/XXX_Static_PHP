@@ -30,11 +30,7 @@ abstract class XXX_Static_HTTPServer
 		$fileType = XXX_HTTPServer_Client_Input::getURIVariable('fileType');
 		*/
 		
-		
-				
-		//XXX_Static_Publisher::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentDataPathPrefix, array('static'));
-		
-		$destinationPath = XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentDataPathPrefix, array('static'));
+		$destinationPath = XXX_Static_Publisher::$destinationPathPrefix;
 		
 		$newFiles = array();
 		

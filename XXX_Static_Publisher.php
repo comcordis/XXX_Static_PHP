@@ -78,7 +78,7 @@ abstract class XXX_Static_Publisher
 	
 	public static function initialize ()
 	{
-		self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$deploymentDataPathPrefix, array('static'));
+		self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataProjectsPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['deployEnvironment'], XXX::$deploymentInformation['project']));
 		
 		$staticCacheMappingPath = XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
 		
@@ -680,8 +680,10 @@ abstract class XXX_Static_Publisher
 		return $result;
 	}
 	
-	public static function publishMergedFilesFromOtherProject ($project = '', $deployIdentifier = 'latest', $mergeFiles = array(), $resultFile = '', $publishProfile = '')
+	public static function publishMergedFilesFromOtherProject ($project = '', $deployIdentifier = false, $mergeFiles = array(), $resultFile = '', $publishProfile = '')
 	{
+		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
+		
 		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project, $deployIdentifier), $mergeFiles, XXX_String::$lineSeparator);
 		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile, $content);
 		
@@ -697,8 +699,10 @@ abstract class XXX_Static_Publisher
 		return $result;
 	}
 	
-	public static function publishOtherProject ($project = '', $deployIdentifier = 'latest', $publishProfile = '')
+	public static function publishOtherProject ($project = '', $deployIdentifier = false, $publishProfile = '')
 	{
+		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
+		
 		XXX_Path_Local::includeOtherProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
 	}
 	
