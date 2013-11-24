@@ -2,13 +2,25 @@
 
 abstract class XXX_Static_HTTPServer
 {
-	public static function singleFile ($pathParts = array())
+	public static function singleFile ($file)
 	{
-		XXX_HTTPServer_Client_Output::mimicStaticFileServing($pathParts);
+		$file = XXX_MPC_Router::cleanRoute($file);
+		
+		XXX_HTTPServer_Client_Output::mimicStaticFileServing($file);
 	}
 	
 	public static function combinedFiles ($files = array(), $fileType = '')
 	{
+		if (XXX_Type::isEmptyArray($files))
+		{
+			$files = XXX_HTTPServer_Client_Input::getURIVariable('files');
+		}
+		
+		if ($fileType == '')
+		{
+			$fileType = XXX_HTTPServer_Client_Input::getURIVariable('fileType');
+		}
+		
 		$mimeType = 'application/octet-stream';
 		switch ($fileType)
 		{
@@ -25,17 +37,14 @@ abstract class XXX_Static_HTTPServer
 			$files = XXX_String::splitToArray($files, '|');
 		}
 		
-		/*
-		$files = XXX_HTTPServer_Client_Input::getURIVariable('files');
-		$fileType = XXX_HTTPServer_Client_Input::getURIVariable('fileType');
-		*/
-		
 		$destinationPath = XXX_Static_Publisher::$destinationPathPrefix;
 		
 		$newFiles = array();
 		
 		foreach ($files as $file)
 		{
+			$file = XXX_MPC_Router::cleanRoute($file);
+			
 			$tempFile = XXX_Path_Local::extendPath($destinationPath, $file);
 			
 			$newFiles[] = $tempFile;

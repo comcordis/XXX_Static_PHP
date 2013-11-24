@@ -144,7 +144,7 @@ abstract class XXX_Static_Publisher
 		$result = true;
 		
 		if (self::$selectedPublishProfile)
-		{			
+		{
 			$extension = XXX_FileSystem_Local::getFileExtension($path);
 			
 			$filesPublishProfile = self::$publishProfiles[self::$selectedPublishProfile]['files'];
