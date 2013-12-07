@@ -654,6 +654,63 @@ abstract class XXX_Static_Publisher
 		return $result;
 	}
 	
+	public static function getCurrentI18nURIs ($project = '', $type = 'translations')
+	{
+		$result = array();
+		
+		foreach (XXX_Path_Local::$loadedIncludeFiles[$type] as $path)
+		{
+			$relativePath = false;
+			$type = false;
+			
+			if (XXX_String::beginsWith($path, XXX_Path_Local::$deploymentSourcePathPrefix))
+			{
+				$relativePath = XXX_String::getPart($path, XXX_String::getCharacterLength(XXX_Path_Local::$deploymentSourcePathPrefix));
+				
+				$type = 'deploymentSourcePathPrefix';
+			}
+			else if (XXX_String::beginsWith($path, XXX_Path_Local::$deploymentDataPathPrefix))
+			{
+				$relativePath = XXX_String::getPart($path, XXX_String::getCharacterLength(XXX_Path_Local::$deploymentDataPathPrefix));
+				
+				$type = 'deploymentDataPathPrefix';
+			}
+			else if (XXX_String::beginsWith($path, XXX_Path_Local::$sourcesProjectsPathPrefix))
+			{
+				$relativePath = XXX_String::getPart($path, XXX_String::getCharacterLength(XXX_Path_Local::$sourcesProjectsPathPrefix));
+				
+				$type = 'sourcePathPrefix';
+			}
+			
+			$relativeURI = XXX_String::replace($relativePath, array('\\', '.php'), array('/', '.js'));
+			
+			switch ($type)
+			{
+				case 'deploymentSourcePathPrefix':
+					$uri = XXX_Static_Publisher::prefixAndMapFile($project . '/' . $relativeURI);			
+					break;
+				case 'deploymentDataPathPrefix':
+					$uri = XXX_Static_Publisher::prefixAndMapFile($project . '/data/' . $relativeURI);		
+					break;
+				case 'sourcePathPrefix':
+					$uri = XXX_Static_Publisher::prefixAndMapFile($relativeURI);		
+					break;
+			}
+			
+			
+			$result[] = array
+			(
+				'path' => $path,
+				'type' => $type,
+				'relativePath' => $relativePath,
+				'relativeURI' => $relativeURI,
+				'uri' => $uri
+			);
+		}
+		
+		return $result;
+	}
+	
 	public static function publishJSVariableToProject ($project = '', $key = '', $value = '', $domReady = true, $resultFile = '', $publishProfile = '')
 	{
 		$content = 'var ' . $key . ' = ' . XXX_String_JSON::encode($value) . ';' . XXX_OperatingSystem::$lineSeparator;
