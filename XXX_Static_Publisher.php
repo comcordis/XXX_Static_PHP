@@ -684,15 +684,12 @@ abstract class XXX_Static_Publisher
 			
 			$relativeURI = XXX_String::replace($relativePath, array('\\', '.php'), array('/', '.js'));
 			
-			if ($type == 'sourcePathPrefix')
-			{
-				$relativeURI = XXX_String::replace($relativePath, array('latest/'), array(''));
-				$relativeURI = XXX_String::replace($relativePath, array('production/'), array(''));
-				$relativeURI = XXX_String::replace($relativePath, array('staging/'), array(''));
-				$relativeURI = XXX_String::replace($relativePath, array('acceptance/'), array(''));
-				$relativeURI = XXX_String::replace($relativePath, array('integration/'), array(''));
-				$relativeURI = XXX_String::replace($relativePath, array('development/'), array(''));
-			}
+				$relativeURI = XXX_String::replace($relativeURI, array('latest/'), array(''));
+				$relativeURI = XXX_String::replace($relativeURI, array('production/'), array(''));
+				$relativeURI = XXX_String::replace($relativeURI, array('staging/'), array(''));
+				$relativeURI = XXX_String::replace($relativeURI, array('acceptance/'), array(''));
+				$relativeURI = XXX_String::replace($relativeURI, array('integration/'), array(''));
+				$relativeURI = XXX_String::replace($relativeURI, array('development/'), array(''));
 			
 			switch ($type)
 			{
