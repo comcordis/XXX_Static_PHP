@@ -687,16 +687,16 @@ abstract class XXX_Static_Publisher
 			switch ($type)
 			{
 				case 'deploymentSourcePathPrefix':
-					$uri = XXX_Static_Publisher::prefixAndMapFile($project . '/' . $relativeURI);			
+					$relativeURI = $project . '/' . $relativeURI;			
 					break;
-				case 'deploymentDataPathPrefix':
-					$uri = XXX_Static_Publisher::prefixAndMapFile($project . '/data/' . $relativeURI);		
+				case 'deploymentDataPathPrefix':					
+					$relativeURI = $project . '/data/' . $relativeURI;		
 					break;
-				case 'sourcePathPrefix':
-					$uri = XXX_Static_Publisher::prefixAndMapFile($relativeURI);		
+				case 'sourcePathPrefix':	
 					break;
 			}
 			
+			$uri = XXX_Static_Publisher::prefixAndMapFile($relativeURI);
 			
 			$result[] = array
 			(
