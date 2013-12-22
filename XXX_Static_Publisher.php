@@ -817,6 +817,14 @@ abstract class XXX_Static_Publisher
 		XXX_Type::$comments = $originalComments;
 		
 	}
+	
+	public static function correctOwnerAndPermissions ()
+	{
+		XXX_FileSystem_Local::setDirectoryOwnerAdvanced(self::$destinationPathPrefix, 'apache', 'apache', true, true);
+		
+		XXX_FileSystem_Local::setDirectoryPermissions(self::$destinationPathPrefix, '770', true);			
+		XXX_FileSystem_Local::setFilePermissionsInDirectory(self::$destinationPathPrefix, '660', true);
+	}
 }
 
 ?>
