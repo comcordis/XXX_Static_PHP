@@ -277,7 +277,6 @@ abstract class XXX_Static_Publisher
 							
 							self::$cacheMapping[$shortenedNewPath] = $shortenedNewPathWithChecksum;
 							
-							$result = XXX_FileSystem_Local::copyFile($path, $newPath);
 							
 							if (class_exists('YUI_Compressor'))
 							{
@@ -308,6 +307,7 @@ abstract class XXX_Static_Publisher
 								$result = XXX_FileSystem_Local::copyFile($path, $newPathWithChecksum);
 							}
 							
+							$result = XXX_FileSystem_Local::copyFile($path, $newPath);
 						}
 					}
 				}
