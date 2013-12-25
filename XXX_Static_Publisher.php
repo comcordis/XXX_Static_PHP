@@ -760,8 +760,6 @@ abstract class XXX_Static_Publisher
 		
 		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project, $deployIdentifier), $mergeFiles, XXX_String::$lineSeparator);
 		
-		echo '[' . XXX_OperatingSystem::$temporaryFilesPathPrefix . ']';
-		
 		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile, $content);
 		
 		$item = array
@@ -778,10 +776,8 @@ abstract class XXX_Static_Publisher
 	
 	public static function publishOtherProject ($project = '', $deployIdentifier = false, $publishProfile = '')
 	{
-		echo $project . '|' . $deployIdentifier . '|' . $publishProfile . 'before<hr>';
 		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
 		
-		echo $project . '|' . $deployIdentifier . '|' . $publishProfile . 'after<hr>';
 		XXX_Path_Local::includeOtherProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
 	}
 	
