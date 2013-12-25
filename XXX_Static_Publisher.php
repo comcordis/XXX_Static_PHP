@@ -759,6 +759,9 @@ abstract class XXX_Static_Publisher
 		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
 		
 		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project, $deployIdentifier), $mergeFiles, XXX_String::$lineSeparator);
+		
+		echo '[' . XXX_OperatingSystem::$temporaryFilesPathPrefix . ']';
+		
 		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile, $content);
 		
 		$item = array
