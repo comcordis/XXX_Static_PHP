@@ -265,7 +265,7 @@ abstract class XXX_Static_Publisher
 							$shortenedNewPath = XXX_String::replace($shortenedNewPath, XXX_OperatingSystem::$directorySeparator, '/');
 							$shortenedNewPathWithChecksum = XXX_String::replace($shortenedNewPathWithChecksum, XXX_OperatingSystem::$directorySeparator, '/');
 							
-							/*						
+												
 							echo $path . '<br>';
 							echo '- ' . $newPath . '<br>';
 							echo '- ' . $newPathWithChecksum . '<br>';
@@ -273,7 +273,7 @@ abstract class XXX_Static_Publisher
 							echo '- ' . $shortenedNewPathWithChecksum . '<br>';
 							
 							echo '<hr>';
-							*/
+							
 							
 							self::$cacheMapping[$shortenedNewPath] = $shortenedNewPathWithChecksum;
 							
