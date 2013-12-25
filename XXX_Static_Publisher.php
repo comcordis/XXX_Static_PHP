@@ -775,8 +775,10 @@ abstract class XXX_Static_Publisher
 	
 	public static function publishOtherProject ($project = '', $deployIdentifier = false, $publishProfile = '')
 	{
+		echo $project . '|' . $deployIdentifier . '|' . $publishProfile . 'before<hr>';
 		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
 		
+		echo $project . '|' . $deployIdentifier . '|' . $publishProfile . 'after<hr>';
 		XXX_Path_Local::includeOtherProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
 	}
 	
