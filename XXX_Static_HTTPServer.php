@@ -113,6 +113,7 @@ abstract class XXX_Static_HTTPServer
 				
 				XXX_HTTPServer_Client_Output::sendHeader('Last-Modified: '. gmdate('D, d M Y H:i:s', $fileModifiedTimestamp) . ' GMT');
 				XXX_HTTPServer_Client_Output::sendHeader('Expires: '. gmdate('D, d M Y H:i:s', time() + (86400 * 365)) . ' GMT');
+				XXX_HTTPServer_Client_Output::$mimeType = $mimeType;
 				XXX_HTTPServer_Client_Output::sendHeader('Content-Type: ' . $mimeType);
 				XXX_HTTPServer_Client_Output::sendHeader('Content-Length: ' . $byteSize);
 				

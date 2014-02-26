@@ -201,9 +201,7 @@ abstract class XXX_Static_Publisher
 	public static function publishFile ($sourceFilePath = '', $destinationFilePath = '', $deleteSourceFile = false)
 	{
 		$result = false;
-		
-		echo $sourceFilePath . ' - ' . $destinationFilePath . '<hr>';
-		
+				
 		if (XXX_FileSystem_Local::doesFileExist($destinationFilePath))
 		{
 			XXX_FileSystem_Local::deleteFile($destinationFilePath);
