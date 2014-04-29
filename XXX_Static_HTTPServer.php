@@ -29,7 +29,7 @@ abstract class XXX_Static_HTTPServer
 				break;
 			case 'css':
 				$mimeType = 'text/css';
-				break;			
+				break;
 		}
 		
 		if (!XXX_Type::isArray($files))
@@ -123,7 +123,7 @@ abstract class XXX_Static_HTTPServer
 				}
 				
 				XXX_HTTPServer_Client_Output::sendHeader('Connection: close');
-		
+				
 				echo $fileContent;
 			}
 		}

@@ -772,6 +772,37 @@ abstract class XXX_Static_Publisher
 		return $result;
 	}
 	
+	public static function publishAlreadyPublishedMergedFiles ($alreadyPublishedMergeFiles = array(), $resultFile = '', $publishProfile = '')
+	{
+		$newFiles = array();
+		
+		foreach ($alreadyPublishedMergeFiles as $file)
+		{
+			$file = XXX_MPC_Router::cleanRoute($file);
+			
+			$file = XXX_Static_Publisher::mapFile($file);
+			
+			$newFiles[] = $file;
+		}
+		
+		$alreadyPublishedMergeFiles = $newFiles;
+		
+		$content = XXX_FileSystem_Local::getMergedFilesContent(self::$destinationPathPrefix, $alreadyPublishedMergeFiles, XXX_String::$lineSeparator);
+		
+		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . XXX::$deploymentInformation['project'] . '_' . $resultFile, $content);
+		
+		$item = array
+		(
+			'sourcePath' => XXX_OperatingSystem::$temporaryFilesPathPrefix . XXX::$deploymentInformation['project'] . '_' . $resultFile,
+			'destinationPath' => XXX_Path_Local::extendPath(self::$destinationPathPrefix, array(XXX::$deploymentInformation['project'], $resultFile)),
+			'publishProfile' => $publishProfile
+		);
+		
+		$result = self::publishItem($item);
+		
+		return $result;
+	}
+	
 	public static function publishOtherProject ($project = '', $deployIdentifier = false, $publishProfile = '')
 	{
 		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
