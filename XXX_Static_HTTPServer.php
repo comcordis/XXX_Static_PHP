@@ -116,10 +116,10 @@ abstract class XXX_Static_HTTPServer
 				XXX_HTTPServer_Client_Output::setMIMETypeAndCharacterSet($mimeType);
 				XXX_HTTPServer_Client_Output::sendHeader('Content-Length: ' . $byteSize);
 				
-				if (class_exists('XXX_HTTP_Cookie_Session'))
+				if (class_exists('XXX_Session'))
 				{
 					XXX::dispatchEventToListeners('beforeSaveSession');
-					XXX_HTTP_Cookie_Session::save();
+					XXX_Session::save();
 				}
 				
 				XXX_HTTPServer_Client_Output::sendHeader('Connection: close');
