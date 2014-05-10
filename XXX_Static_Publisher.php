@@ -284,7 +284,9 @@ abstract class XXX_Static_Publisher
 								$processed = true;
 							}
 							else
-							{
+							{	
+								
+								
 								if (class_exists('YUI_Compressor'))
 								{
 									$extension = XXX_FileSystem_Local::getFileExtension($path);
@@ -831,6 +833,66 @@ abstract class XXX_Static_Publisher
 	public static function clear ()
 	{
 		XXX_FileSystem_Local::emptyDirectory(self::$destinationPathPrefix);
+	}
+	
+	public static function correctCSSURLs ()
+	{
+		foreach (self::$cacheMapping as $oldPath => $newPath)
+		{
+			if (XXX_String::endsWith($oldPath, '.css'))
+			{
+				$tempFile = XXX_Path_Local::extendPath(XXX_Static_Publisher::$destinationPathPrefix, XXX_Path_Local::normalizePath($newPath, false, true));
+				
+				$tempFileContent = XXX_FileSystem_Local::getFileContent($tempFile);
+				
+				$cssURLMatches = XXX_String_Pattern::getMatches($tempFileContent, 'url\\([\'"]?([^)]{1,})[\'"]?\\)', 'i');
+				
+				for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($cssURLMatches[0]); $i < $iEnd; ++$i)
+				{
+					$url = $cssURLMatches[1][$i];
+					
+					if (!(XXX_String::beginsWith($url, 'http') || XXX_String::beginsWith($url, 'data') || XXX_String::beginsWith($url, '#')))
+					{
+						$fixedURL = $url;
+												
+						$offsetPathParts = XXX_String::splitToArray($newPath, '/');
+						
+						// Delete file identifier
+						$offsetPathParts = XXX_Array::deleteLastItem($offsetPathParts);
+						
+						// Higher offset directory
+						if (XXX_String::beginsWith($fixedURL, '../'))
+						{
+							while (true)
+							{
+								if (XXX_String::beginsWith($fixedURL, '../'))
+								{
+									$fixedURL = XXX_String::getPart($fixedURL, 3);
+									
+									$offsetPathParts = XXX_Array::deleteLastItem($offsetPathParts);
+								}
+								else
+								{
+									break;
+								}
+							}
+						}
+						
+						$fixedURL = XXX_Array::joinValuesToString($offsetPathParts, '/') . '/' . $fixedURL;
+												
+						// TODO Make relative
+																		
+						$fixedURL = self::prefixAndMapFile($fixedURL);
+						
+						$tempFileContent = XXX_String::replace($tempFileContent, $cssURLMatches[0][$i], 'url(\'' . $fixedURL . '\')');
+					}
+				}
+				
+				// TODO Fix new checksum
+				
+				XXX_FileSystem_Local::writeFileContent($tempFile, $tempFileContent);
+			}
+		}										
 	}
 	
 	public static function saveCacheMapping ()
