@@ -277,28 +277,36 @@ abstract class XXX_Static_Publisher
 							
 							self::$cacheMapping[$shortenedNewPath] = $shortenedNewPathWithChecksum;
 							
+							$newPathWithChecksumAlreadyExists = XXX_FileSystem_Local::doesFileExist($newPathWithChecksum);
 							
-							if (class_exists('YUI_Compressor'))
+							if ($newPathWithChecksumAlreadyExists)
 							{
-								$extension = XXX_FileSystem_Local::getFileExtension($path);
-							
-								$filesPublishProfile = self::$publishProfiles[self::$selectedPublishProfile]['files'];			
-								
-								switch ($extension)
+								$processed = true;
+							}
+							else
+							{
+								if (class_exists('YUI_Compressor'))
 								{
-									case 'js':
-										if ($filesPublishProfile['compress']['js'])
-										{
-											$processed = YUI_Compressor::compressJSFile($path, $newPathWithChecksum);
-										}
-										break;
-									case 'css':
-										if ($filesPublishProfile['compress']['css'])
-										{
-											$processed = YUI_Compressor::compressCSSFile($path, $newPathWithChecksum);
-										}
-										break;
-									// TODO smush/optimize images
+									$extension = XXX_FileSystem_Local::getFileExtension($path);
+								
+									$filesPublishProfile = self::$publishProfiles[self::$selectedPublishProfile]['files'];			
+									
+									switch ($extension)
+									{
+										case 'js':
+											if ($filesPublishProfile['compress']['js'])
+											{
+												$processed = YUI_Compressor::compressJSFile($path, $newPathWithChecksum);
+											}
+											break;
+										case 'css':
+											if ($filesPublishProfile['compress']['css'])
+											{
+												$processed = YUI_Compressor::compressCSSFile($path, $newPathWithChecksum);
+											}
+											break;
+										// TODO smush/optimize images
+									}
 								}
 							}
 							
@@ -307,7 +315,17 @@ abstract class XXX_Static_Publisher
 								$result = XXX_FileSystem_Local::copyFile($path, $newPathWithChecksum);
 							}
 							
-							$result = XXX_FileSystem_Local::copyFile($path, $newPath);
+							if ($newPathWithChecksumAlreadyExists)
+							{
+								if (!XXX_FileSystem_Local::doesFileExist($newPath))
+								{
+									$result = XXX_FileSystem_Local::copyFile($path, $newPath);
+								}
+							}
+							else
+							{
+								$result = XXX_FileSystem_Local::copyFile($path, $newPath);
+							}
 						}
 					}
 				}
