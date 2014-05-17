@@ -66,6 +66,7 @@ abstract class XXX_Static_Publisher
 					'cache',
 					'controllers',
 					'models',
+					'phpMyAdmin',
 					'templates',
 					'serverSide',
 					'commandLine'
