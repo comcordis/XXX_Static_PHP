@@ -48,6 +48,7 @@ abstract class XXX_Static_Publisher
 					'db',
 					'sql',
 					'tmp',
+					'pem',
 					'cer',
 					'pub'
 				)
