@@ -1,7 +1,5 @@
 <?php
 
-// TODO css replace url() with checksum stuff
-
 abstract class XXX_Static_Publisher
 {
 	const CLASS_NAME = 'XXX_Static_Publisher';
