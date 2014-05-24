@@ -112,14 +112,34 @@ abstract class XXX_Static_Publisher
 		
 		return $result;
 	}
-	
-	public static function prefixAndMapFile ($originalFilePath = '')
+		
+	public static function composeURI ($file = '')
 	{
 		$result = '';
 		
-		$result .= XXX_URI::$currentHTTPServerProtocolPrefix . XXX_URI::$staticURIPathPrefix;
+		if (XXX_Type::isArray($file) && XXX_Array::getFirstLevelItemTotal($file) == 1)
+		{
+			$file = $file[0];
+		}
 		
-		$result .= self::mapFile($originalFilePath);
+		if (XXX_Type::isArray($file))
+		{
+			$files = $file;
+			$newFiles = array();
+			
+			foreach ($files as $file)
+			{
+				$newFiles[] = self::mapFile($file);
+			}
+			
+			$result = XXX_URI::composeRouteURI('static/?files=' . XXX_Array::joinValuesToString($newFiles, '|'), 'current', true);
+		}
+		else
+		{
+			$file = self::mapFile($file);
+			
+			$result = XXX_URI::composeRouteURI($file, 'static', true);
+		}
 		
 		return $result;
 	}
@@ -244,17 +264,17 @@ abstract class XXX_Static_Publisher
 							2. Normalize path, strip directory separator from begin
 							
 							3. Replace directory separator with URI
-														
-							*/						
+							
+							*/
 							
 							$pathToIdentifier = XXX_Path_Local::getParentPath($newPath);
 							
 							$fileName = XXX_FileSystem_Local::getFileName($newPath);
 							$extension = XXX_FileSystem_Local::getFileExtension($newPath);
 							
-							$checksum = XXX_String::getPart(XXX_FileSystem_Local::getFileChecksum($path, 'md5'), 0, 12);
+							$checksum = XXX_String::getPart(XXX_FileSystem_Local::getFileChecksum($path, 'md5'), 0, 8);
 							
-							$newPathWithChecksum = XXX_Path_Local::extendPath($pathToIdentifier, $fileName . '.' . $checksum . '.' . $extension);
+							$newPathWithChecksum = XXX_Path_Local::extendPath($pathToIdentifier, $checksum . '.' . $fileName . '.' . $extension);
 							
 							
 							$destinationPathPrefixCharacterLength = XXX_String::getCharacterLength(self::$destinationPathPrefix . XXX_OperatingSystem::$directorySeparator);
@@ -284,9 +304,7 @@ abstract class XXX_Static_Publisher
 								$processed = true;
 							}
 							else
-							{	
-								
-								
+							{
 								if (class_exists('YUI_Compressor'))
 								{
 									$extension = XXX_FileSystem_Local::getFileExtension($path);
@@ -724,7 +742,7 @@ abstract class XXX_Static_Publisher
 					break;
 			}
 			
-			$uri = XXX_Static_Publisher::prefixAndMapFile($relativeURI);
+			$uri = XXX_Static_Publisher::composeURI($relativeURI);
 			
 			$result[] = array
 			(
@@ -882,7 +900,7 @@ abstract class XXX_Static_Publisher
 												
 						// TODO Make relative
 																		
-						$fixedURL = self::prefixAndMapFile($fixedURL);
+						$fixedURL = self::composeURI($fixedURL);
 						
 						$tempFileContent = XXX_String::replace($tempFileContent, $cssURLMatches[0][$i], 'url(\'' . $fixedURL . '\')');
 					}
