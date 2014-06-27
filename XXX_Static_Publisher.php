@@ -697,7 +697,7 @@ abstract class XXX_Static_Publisher
 	{
 		$result = array();
 		
-		foreach (XXX_Path_Local::$loadedIncludeFiles[$type] as $path)
+		foreach (XXX_Loader::$loadedFiles[$type] as $path)
 		{
 			$relativePath = false;
 			$type = false;
@@ -792,9 +792,9 @@ abstract class XXX_Static_Publisher
 	
 	public static function publishMergedFilesFromOtherProject ($project = '', $deployIdentifier = false, $mergeFiles = array(), $resultFile = '', $publishProfile = '')
 	{
-		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
+		$deployIdentifier = XXX_Path_Local::normalizeProjectDeploymentDeployIdentifier($project, $deployIdentifier);
 		
-		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeOtherProjectDeploymentSourcePathPrefix($project, $deployIdentifier), $mergeFiles, XXX_String::$lineSeparator);
+		$content = XXX_FileSystem_Local::getMergedFilesContent(XXX_Path_Local::composeProjectDeploymentSourcePathPrefix($project, $deployIdentifier), $mergeFiles, XXX_String::$lineSeparator);
 		
 		XXX_FileSystem_Local::writeFileContent(XXX_OperatingSystem::$temporaryFilesPathPrefix . $project . '_' . $resultFile, $content);
 		
@@ -843,9 +843,9 @@ abstract class XXX_Static_Publisher
 	
 	public static function publishOtherProject ($project = '', $deployIdentifier = false, $publishProfile = '')
 	{
-		$deployIdentifier = XXX_Path_Local::normalizeOtherProjectDeploymentDeployIdentifier($project, $deployIdentifier);
+		$deployIdentifier = XXX_Path_Local::normalizeProjectDeploymentDeployIdentifier($project, $deployIdentifier);
 		
-		XXX_Path_Local::includeOtherProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
+		XXX_Loader::loadProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
 	}
 	
 	public static function clear ()
