@@ -33,7 +33,12 @@ abstract class XXX_Static_Publisher
 					'png',
 					'ico',
 					'swf',
-					'woff'
+					'woff',
+					'mov',
+					'mpeg',
+					'mpg',
+					'mp4',
+					'webm'
 				),
 				
 				'denyExtensions' => array
