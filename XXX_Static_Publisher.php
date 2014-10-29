@@ -66,13 +66,6 @@ abstract class XXX_Static_Publisher
 				'denyNames' => array
 				(
 					'.git',
-					'httpServerJail',
-					'cache',
-					'controllers',
-					'models',
-					'phpMyAdmin',
-					'templates',
-					'serverSide',
 					'commandLine'
 				)
 			)
