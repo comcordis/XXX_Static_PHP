@@ -76,15 +76,8 @@ abstract class XXX_Static_Publisher
 	
 	public static function initialize ()
 	{
-		if (XXX::$deploymentInformation['localDevelopmentBox'])
-		{
-			self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataProjectsPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['project']));
-		}
-		else
-		{
-			self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataProjectsPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['deployEnvironment'], XXX::$deploymentInformation['project']));
-		}
-				
+		self::$destinationPathPrefix = XXX_Path_Local::extendPath(XXX_Path_Local::$dataPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['deployEnvironment'], XXX::$deploymentInformation['project']));
+						
 		$staticCacheMappingPath = XXX_Path_Local::extendPath(self::$destinationPathPrefix, 'static.cacheMapping.php');
 		
 		if (is_file($staticCacheMappingPath))
@@ -525,7 +518,7 @@ abstract class XXX_Static_Publisher
 				$tempTranslations = $XXX_I18n_Translations[$translation['translation']];
 				
 				$content = '
-				XXX_DOM_Ready.addEventListener(function ()
+				XXX.addEventListener(\'beforeLaunch\', function ()
 				{
 					if (!XXX_I18n_Translations.' . $translation['translation'] . ')
 					{
@@ -552,8 +545,8 @@ abstract class XXX_Static_Publisher
 				
 				$tempLocalizations = $XXX_I18n_Localizations[$localization['localization']];
 				
-				$content = '
-				XXX_DOM_Ready.addEventListener(function ()
+				$content = '				
+				XXX.addEventListener(\'beforeLaunch\', function ()
 				{
 					if (!XXX_I18n_Localizations.' . $localization['localization'] . ')
 					{
@@ -712,9 +705,9 @@ abstract class XXX_Static_Publisher
 				
 				$type = 'deploymentDataPathPrefix';
 			}
-			else if (XXX_String::beginsWith($path, XXX_Path_Local::$sourcesProjectsPathPrefix))
+			else if (XXX_String::beginsWith($path, XXX_Path_Local::$sourcesPathPrefix))
 			{
-				$relativePath = XXX_String::getPart($path, XXX_String::getCharacterLength(XXX_Path_Local::$sourcesProjectsPathPrefix));
+				$relativePath = XXX_String::getPart($path, XXX_String::getCharacterLength(XXX_Path_Local::$sourcesPathPrefix));
 				
 				$type = 'sourcePathPrefix';
 			}
@@ -763,7 +756,7 @@ abstract class XXX_Static_Publisher
 		{
 			$temp = '';
 			$temp .= XXX_String::$lineSeparator;
-			$temp .= 'XXX_DOM_Ready.addEventListener(function ()' . XXX_String::$lineSeparator;
+			$temp .= 'XXX.addEventListener(\'beforeLaunch\', function ()' . XXX_String::$lineSeparator;
 			$temp .= '{' . XXX_String::$lineSeparator;
 			$temp .= $content . XXX_String::$lineSeparator;
 			$temp .= '});' . XXX_String::$lineSeparator;
