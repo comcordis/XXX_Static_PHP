@@ -941,10 +941,12 @@ abstract class XXX_Static_Publisher
 	
 	public static function correctOwnerAndPermissions ()
 	{
-		XXX_FileSystem_Local::setDirectoryOwnerAdvanced(self::$destinationPathPrefix, 'apache', 'apache', true, true);
+		$tempPath = XXX_Path_Local::extendPath(XXX_Path_Local::$dataPathPrefix, array('Comcordis_Static', XXX::$deploymentInformation['deployEnvironment']));
+
+		XXX_FileSystem_Local::setDirectoryOwnerAdvanced($tempPath, 'apache', 'apache', true, true);
 		
-		XXX_FileSystem_Local::setDirectoryPermissions(self::$destinationPathPrefix, '770', true);			
-		XXX_FileSystem_Local::setFilePermissionsInDirectory(self::$destinationPathPrefix, '660', true);
+		XXX_FileSystem_Local::setDirectoryPermissions($tempPath, '770', true);			
+		XXX_FileSystem_Local::setFilePermissionsInDirectory($tempPath, '660', true);
 	}
 }
 
