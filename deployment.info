@@ -1,0 +1,6 @@
+project:XXX_Static_PHP
+deployEnvironment:development
+checkout:master
+commitHash:07c5eeb63aa761c338d3cf55c71e3429780fe28d
+timestamp:2015-04-13T09:46:01Z
+deployer:operations
