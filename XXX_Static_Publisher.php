@@ -66,7 +66,8 @@ abstract class XXX_Static_Publisher
 				'denyNames' => array
 				(
 					'.git',
-					'commandLine'
+					'commandLine',
+                    'compilable' // this folder will become 1 big merged file with another script
 				)
 			)
 		)
@@ -89,13 +90,19 @@ abstract class XXX_Static_Publisher
 			self::$cacheMapping = $XXX_Static_cacheMapping;
 		}
 	}
-	
+
+    /**
+     * Mapping van originele file naar uiteindelijke filename
+     * @param string $originalFilePath
+     * @return string
+     */
 	public static function mapFile ($originalFilePath = '')
 	{
 		$result = $originalFilePath;
-		
+
+        // check if a compiled file is in the cacheMapping array and if so then use that value as return value
 		$filePathWithChecksum = self::$cacheMapping[$originalFilePath];
-		
+
 		if ($filePathWithChecksum)
 		{
 			$result = $filePathWithChecksum;
@@ -103,7 +110,16 @@ abstract class XXX_Static_Publisher
 		
 		return $result;
 	}
-		
+
+    /**
+     * Maak de URL die gebruikt kan worden om 1 of meerdere (javascript/html/image) files te printen in de HTML.
+     * Bij javascripts en CSS kan een scheidingsteken geplaatst worden om met 1 request meerdere files in te laden.
+     *
+     * Deze functie zorgt er tevens voor dat de juiste cachefile gebruikt wordt ipv de originele file te retourneren.
+     *
+     * @param string $file
+     * @return string
+     */
 	public static function composeURI ($file = '')
 	{
 		$result = '';
@@ -120,6 +136,7 @@ abstract class XXX_Static_Publisher
 			
 			foreach ($files as $file)
 			{
+                // hier wordt de cachefile opgehaald aan de hand van de originele file, of als die niet bestaat dan retourneert de originele $file
 				$newFiles[] = self::mapFile($file);
 			}
 			
@@ -149,7 +166,14 @@ abstract class XXX_Static_Publisher
 	{
 		self::$selectedPublishProfile = false;
 	}
-	
+
+    /**
+     * Controleert of een file voldoet aan de specificaties om verwerkt te mogen worden.
+     * Er wordt voornamelijk gecontroleerd op de bestandsextensie (.js, .css, .png, etc).
+     *
+     * @param string $path
+     * @return bool
+     */
 	public static function doesFilePassPublishProfile ($path = '')
 	{
 		$result = true;
@@ -178,8 +202,13 @@ abstract class XXX_Static_Publisher
 		
 		return $result;
 	}
-	
-	
+
+    /**
+     * Controleert of een bepaalde map voldoet aan de specificaties om verwerkt te mogen worden.
+     *
+     * @param string $path
+     * @return bool
+     */
 	public static function doesDirectoryPassPublishProfile ($path = '')
 	{
 		$result = true;
@@ -208,7 +237,7 @@ abstract class XXX_Static_Publisher
 		
 		return $result;
 	}
-		
+
 	public static function publishFile ($sourceFilePath = '', $destinationFilePath = '', $deleteSourceFile = false)
 	{
 		$result = false;
@@ -222,7 +251,7 @@ abstract class XXX_Static_Publisher
 		{
 			$path = $sourceFilePath;
 			$newPath = $destinationFilePath;
-			
+
 			if (self::doesFilePassPublishProfile($path))
 			{
 				$newPathExists = XXX_FileSystem_Local::ensurePathExistenceByDestination($newPath);
@@ -836,8 +865,107 @@ abstract class XXX_Static_Publisher
 	{
 		$deployIdentifier = XXX_Path_Local::normalizeProjectDeploymentDeployIdentifier($project, $deployIdentifier);
 		
-		XXX_Loader::loadProjectDeploymentSourceFile($project, 'publish.static.php', $deployIdentifier);
+		XXX_Loader::loadProjectDeploymentSourceFile($project);
 	}
+
+    public static function createCombinedCompressedJSFile() {
+        // pre compile currencies
+        global $XXX_I18n_Currencies;
+        $currency_file_content = 'var XXX_I18n_Currencies='.json_encode($XXX_I18n_Currencies);
+        XXX_FileSystem_Local::writeFileContent(
+            XXX_Path_Local::$sourcesPathPrefix . '/YAT/' . XXX::$deploymentInformation['deployEnvironment'] . '/compilable/XXX/XXX_I18n_JS/currencies.js'
+            ,$currency_file_content
+        );
+
+        // init
+        $src_main_folder_path = XXX_Path_Local::composeProjectDeploymentSourcePathPrefix_Compilable(''); // with ending slash
+        $dst_main_folder_path = XXX_Path_Local::$dataPathPrefix . 'Comcordis_Static' . XXX_OperatingSystem::$directorySeparator . XXX::$deploymentInformation['deployEnvironment'] . XXX_OperatingSystem::$directorySeparator . 'YAT' . XXX_OperatingSystem::$directorySeparator . 'YAT' . XXX_OperatingSystem::$directorySeparator;
+
+        $js_files = array();
+        $processed_filepaths = array();
+
+        // fetch $js_files config
+        require($src_main_folder_path . 'compile_recipe_js.php');
+
+        if(count($js_files) > 0) {
+
+            // compress/minify all files individually
+            foreach($js_files as $relative_filepath) {
+
+                if($relative_filepath == '../../presenters/YAT.js') {
+                    sleep(1);
+                }
+
+                $in_filepath = str_replace('compilable/XXX/../../', '',  $src_main_folder_path.$relative_filepath);
+                $out_filepath = XXX_Data.'/Static/Compile/'.str_replace('.js', '_'.time().'.js',  str_replace('../../', '',  $relative_filepath) );
+
+                // process
+                if(YUI_Compressor::compressJSFile($in_filepath, $out_filepath)) {
+                    $processed_filepaths[] = $out_filepath;
+                } else {
+                    print "NOT ADDED: $in_filepath<br>\n";
+                }
+            }
+
+            // merge all files into 1 file
+            $total_js = '';
+            foreach($processed_filepaths as $js_absolute_filepath) {
+                $total_js .= file_get_contents($js_absolute_filepath)."\n";
+            }
+
+            // write to disk
+            $fw = fopen($dst_main_folder_path.'combined.js', 'w');
+            if($fw) {
+                fwrite($fw, $total_js);
+                fclose($fw);
+            }
+        }
+    }
+
+    public static function createCombinedCompressedCSSFile() {
+        // init
+        $src_main_folder_path = XXX_Path_Local::composeProjectDeploymentSourcePathPrefix_Compilable(''); // with ending slash
+        $dst_main_folder_path = XXX_Path_Local::$dataPathPrefix . 'Comcordis_Static' . XXX_OperatingSystem::$directorySeparator . XXX::$deploymentInformation['deployEnvironment'] . XXX_OperatingSystem::$directorySeparator . 'YAT' . XXX_OperatingSystem::$directorySeparator . 'YAT' . XXX_OperatingSystem::$directorySeparator;
+
+        $css_files = array();
+        $processed_filepaths = array();
+
+        // fetch $css_files config
+        require($src_main_folder_path . 'compile_recipe_css.php');
+
+        if(count($css_files) > 0) {
+
+            // compress/minify all files individually
+            foreach($css_files as $absolute_src_filepath => $relative_dst_filepath) {
+                $in_filepath = $absolute_src_filepath;
+                $out_filepath = XXX_Data.'/Static/Compile/'.str_replace('.css', '_'.time().'.css', $relative_dst_filepath);
+
+                // process
+                if(YUI_Compressor::compressCSSFile($in_filepath, $out_filepath)) {
+                    $processed_filepaths[] = $out_filepath;
+                } else {
+                    print "NOT ADDED: $in_filepath<br>\n";
+                }
+            }
+
+            // merge all files into 1 file
+            $total_css = '';
+            foreach($processed_filepaths as $css_absolute_filepath) {
+                $total_css .= file_get_contents($css_absolute_filepath)."\n";
+            }
+
+            // write to disk
+            $fw = fopen($dst_main_folder_path.'combined.css', 'w');
+            if($fw) {
+                fwrite($fw, $total_css);
+                fclose($fw);
+            }
+        }
+    }
+
+    public static function createPHPTranslations() {
+        YAT_Helper_Translations::publishCustomTranslations();
+    }
 	
 	public static function clear ()
 	{
@@ -949,5 +1077,3 @@ abstract class XXX_Static_Publisher
 		XXX_FileSystem_Local::setFilePermissionsInDirectory($tempPath, '660', true);
 	}
 }
-
-?>
